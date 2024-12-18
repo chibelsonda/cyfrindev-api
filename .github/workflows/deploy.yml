@@ -23,7 +23,7 @@ jobs:
     - name: Deploy to AWS EC2
       env:
         PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        HOSTNAME: ${{ secrets.EC2_HOSTNAME }}
+        HOSTNAME: ${{ secrets.AWS_INSTANCE_IP }}
         USERNAME: ubuntu 
       run: |
         echo "$PRIVATE_KEY" > private_key
