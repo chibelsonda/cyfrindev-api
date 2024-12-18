@@ -3,7 +3,7 @@ name: Cyfrindev Deployment
 on:
  push:
    branches: [main]
-   
+
 jobs:
  deploy:
    runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
     - name: Synchronize Files To Server
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
         SOURCE: "."
         REMOTE_HOST: ${{ secrets.AWS_INSTANCE_IP }}
         REMOTE_USER: ${{ secrets.AWS_USER }}
