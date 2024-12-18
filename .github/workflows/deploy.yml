@@ -1,4 +1,4 @@
-name: Cyfinden Deployment
+name: Cyfrindev Deployment
 on:
  push:
  branches:
