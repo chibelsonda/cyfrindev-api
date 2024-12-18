@@ -21,4 +21,8 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
     - name: Deploy to AWS EC2
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        REMOTE_HOST: ${{ secrets.EC2_HOSTNAME }}
+        REMOTE_USER: ubuntu 
       run: ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_INSTANCE_IP }} "cd /var/www/html/api && git pull && composer install --no-dev && php artisan migrate --force && php artisan optimize"
