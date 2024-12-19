@@ -27,7 +27,7 @@ jobs:
         SOURCE: "."
         REMOTE_HOST: ${{ secrets.AWS_INSTANCE_IP }}
         REMOTE_USER: ${{ secrets.AWS_USER }}
-        TARGET: "/var/www/html/cyfrindev.com"
+        TARGET: "/var/www/vhosts/cyfrindev-api"
 
     - name: Run Remote/Artisan Commands
       uses: appleboy/ssh-action@v1.2.0
@@ -36,6 +36,6 @@ jobs:
         username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
         script: |
-          cd /var/www/html/cyfrindev.com
+          cd /var/www/vhosts/cyfrindev-api
           php artisan migrate --force
           php artisan optimize
