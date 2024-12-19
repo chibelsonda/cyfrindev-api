@@ -30,7 +30,7 @@ jobs:
         TARGET: "/var/www/html/cyfrindev.com"
 
     - name: Run Remote/Artisan Commands
-      uses: appleboy/ssh-action@v0.1.6
+      uses: appleboy/ssh-action@v1.2.0
       with:
         host: ${{ secrets.AWS_INSTANCE_IP }}
         username: ${{ secrets.AWS_USER }}
