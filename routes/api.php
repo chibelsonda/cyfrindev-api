@@ -16,9 +16,11 @@ Route::post('/confirm-email', [UserController::class, 'confirmEmail']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // user
-    Route::post('/users', [UserController::class, 'update']);
-    Route::get('/users', [UserController::class, 'getUsers']);
-    Route::get('/users/{id}', [UserController::class, 'getUser']);
+    Route::prefix('/users')->group(function () {
+        Route::post('/', [UserController::class, 'update']);
+        Route::get('/', [UserController::class, 'getUsers']);
+        Route::get('/{user_id}', [UserController::class, 'getUser']);
+    });
 
 
     Route::post('/logout', [AuthController::class, 'logout']);

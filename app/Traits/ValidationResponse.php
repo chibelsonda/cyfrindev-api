@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Trait;
+namespace App\Traits;
 
 use Illuminate\Http\Response;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-trait ValidationTrait
+trait ValidationResponse
 {
     /**
      * @param Validator $validator
@@ -16,8 +16,7 @@ trait ValidationTrait
     public function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(
-            response()->json(
-                [
+            response()->json([
                     'success' => false,
                     'message' => array_values($validator->errors()->toArray())
                 ],

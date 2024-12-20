@@ -6,6 +6,7 @@ use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Api\BaseController;
+use App\Http\Resources\UserResource;
 
 class AuthController extends BaseController
 {
@@ -20,27 +21,30 @@ class AuthController extends BaseController
     }
 
     /**
-     * Login
+     * Login user
      *
-     * @return JsonResponse
+     * @return UserResource
      */
-    public function login(LoginRequest $request): JsonResponse
+    public function login(LoginRequest $request): UserResource
     {
-        $response = $this->authService->login($request->validated());
+        $user = $this->authService->login($request->validated());
 
-        return $this->sendResponse($response);
+        $data = [
+            'message' => 'Logged in successfully'
+        ];
+
+        return (new UserResource($user))->additional($data);
     }
 
     /**
      * Logout user
      *
      * @return JsonResponse
-     * 
      */
     public function logout(): JsonResponse
     {
-        $response = $this->authService->logout();
+        $this->authService->logout();
 
-        return $this->sendResponse($response);
+        return $this->message('Logged out successfully')->sendResponse();
     }
 }

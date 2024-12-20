@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests\User;
 
-use App\Trait\ValidationTrait;
+use App\Traits\ValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SignupRequest extends FormRequest
 {
-    use ValidationTrait;
+    use ValidationResponse;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -25,12 +25,14 @@ class SignupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required|email|unique:users,email",
-            "password" => [
-                "required",
-                "min:8",
-                "max:32",
-                "regex:/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#%^&*_\-])(?=.*[0-9])(?=.*[!@#%^&*_\-])/"
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|email|unique:users,email',
+            'password' => [
+                'required',
+                'min:8',
+                'max:32',
+                'regex:/^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#%^&*_\-])(?=.*[0-9])(?=.*[!@#%^&*_\-])/'
             ],
         ];
     }
@@ -43,7 +45,7 @@ class SignupRequest extends FormRequest
     public function messages(): array
     {
         return [
-            "regex" => "Password should be alphanumeric and special characters."
+            "regex" => "Password should be alphanumeric and contain special character."
         ];
     }
 }

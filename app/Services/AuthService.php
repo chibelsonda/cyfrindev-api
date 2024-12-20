@@ -7,60 +7,41 @@ use App\Models\User;
 use App\Services\BaseService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\AuthenticationException;
 
 class AuthService extends BaseService
 {
     /**
-     * Login
+     * Login user
      *
      * @param array $user
      * 
-     * @return array
+     * @return User
      */
-    public function login($user): array
+    public function login($user): User
     {
-        try {
-            $credential = [
-                "email" => $user['email'],
-                "password" => $user['password']
-            ];
+        $credential = [
+            'email' => $user['email'],
+            'password' => $user['password']
+        ];
 
-            if (!Auth::attempt($credential)) {
-                return $this->setUnauthorizedResponse("Invalid username or password");
-            }
-
-            $user = Auth::user();
-            $user = [
-                'id' => $user->uuid,
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'auth_token' => $user->createToken('auth_token')->plainTextToken
-            ];
-
-            return $this->setResponse(
-                message:"Logged in successfully", 
-                data: ["user" => $user]
-            );
-
-        } catch (Exception $e) {
-            return $this->handleError($e);
+        if (!Auth::attempt($credential)) {
+            throw new AuthenticationException('Invalid username or password.');
         }
+
+        $user = Auth::user();
+        $user['auth_token'] = $user->createToken('auth_token')->plainTextToken;
+
+        return $user;
     }
 
     /**
      * Logout user
      *
-     * @return array
+     * @return void
      */
-    public function logout(): array
+    public function logout(): void
     {
-        try { 
-            Auth::user()->currentAccessToken()->delete();
-
-            return $this->setResponse("Successfully logged out");
-
-        } catch(Exception $e) {
-            return $this->handleError($e);
-        }
+        Auth::user()->currentAccessToken()->delete();
     }
 }

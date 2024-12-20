@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Services\UserService;
-use App\Http\Controllers\Api\BaseController;
-use App\Http\Requests\User\SignupRequest;
-use App\Http\Requests\User\UpdateUserRequest;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
+use App\Http\Resources\UserResource;
+use App\Http\Requests\User\SignupRequest;
+use App\Http\Controllers\Api\BaseController;
+use App\Http\Requests\User\UpdateUserRequest;
 
 class UserController extends BaseController
 {
@@ -17,7 +19,7 @@ class UserController extends BaseController
 
     public function __construct()
     {
-        $this->userService = new UserService();    
+        $this->userService = new UserService(request()->route('user_id'));    
     }
 
     /**
@@ -33,15 +35,18 @@ class UserController extends BaseController
     }
 
     /**
-     * Signup
+     * Signup user
      *
      * @return JsonResponse
      */
     public function signup(SignupRequest $request): JsonResponse
     {
-        $response = $this->userService->signup($request->validated());
+        $user = $this->userService->signup($request->validated());
 
-        return $this->sendResponse($response);
+        return (new UserResource($user))
+            ->additional(['message' => 'Please check your inbox for the email confirmation.'])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
@@ -73,15 +78,12 @@ class UserController extends BaseController
     /**
      * Get a user
      *
-     * @param string $id
-     * 
-     * @return JsonResponse
-     * 
+     * @return UserResource
      */
-    public function getUser($id): JsonResponse
+    public function getUser(): UserResource
     {
-        $result = $this->userService->getUser($id);
+        $user = $this->userService->getUser();
 
-        return response()->json($result);
+        return (new UserResource($user));
     }
 }

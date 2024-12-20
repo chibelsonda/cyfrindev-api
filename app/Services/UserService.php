@@ -12,9 +12,23 @@ use App\Services\BaseService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserService extends BaseService
-{
+{    
+    /**
+     * @var User
+     */
+    private $user;
+
+    public function __construct(private $id)
+    {
+        if ($id) {
+            $this->user = User::where('uuid', $id)->first();
+        }
+    }
+
+    
     /**
      * Get users
      *
@@ -37,37 +51,25 @@ class UserService extends BaseService
      *
      * @param array $user
      * 
-     * @return array
+     * @return User
      */
-    public function signup($user): array
+    public function signup($user): User
     {
-        try {
+        $user['password'] = bcrypt($user['password']);
 
-            $user = [
-                "email" => $user['email'],
-                "password" => bcrypt($user['password'])
-            ];
+        $user = User::create($user);
 
-            User::create($user);
+        // $email = [
+        //     "subject" => "Email Confirmation",
+        //     "to" => $user['email'],
+        //     "view" => "emails.confirmation",
+        //     "content" => [
+        //         "token" => Crypt::encrypt($user)
+        //     ]
+        // ];
+        // dispatch(new SendEmailJob(new Email($email)));
 
-            $email = [
-                "subject" => "Email Confirmation",
-                "to" => $user['email'],
-                "view" => "emails.confirmation",
-                "content" => [
-                    "token" => Crypt::encrypt($user)
-                ]
-            ];
-
-            dispatch(new SendEmailJob(new Email($email)));
-            
-            return $this->setResponse(
-                message: "Please check your inbox for email confirmation."
-            );
-
-        } catch (Exception $e) {
-            return $this->handleError($e);
-        }
+        return $user;
     }
 
      /**
@@ -155,22 +157,15 @@ class UserService extends BaseService
 
     /**
      * Get user
-     *
-     * @param string $id
      * 
-     * @return array
-     * 
+     * @return User
      */
-    public function getUser($id): array
+    public function getUser(): User
     {
-        try {
-            $user = User::where('uuid', $id)->first();
-
-            return $this->setResponse(
-                data: ["user" => $user]
-            );
-        } catch (Exception $e) {
-            return $this->handleError($e);
+        if (!$this->user) {
+            throw new NotFoundHttpException('User not found');
         }
+
+        return $this->user;
     }
 }

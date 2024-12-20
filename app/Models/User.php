@@ -3,7 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Str;
+use App\Traits\Uuid;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use Uuid;
 
     /**
      * The attributes that are mass assignable.
@@ -21,33 +22,14 @@ class User extends Authenticatable
     protected $fillable = [
         'uuid',
         'first_name',
-        'middle_name',
         'last_name',
-        'preferred_name',
         'email',
         'email_verified_at',
         'password',
         'remember_token',
         'created_at',
         'updated_at',
-        'birth_date',
-        'gender',
-        'marital_status',
-        'street_1',
-        'street_2',
-        'city',
-        'province',
-        'postal_code',
-        'country',
-        'work_phone_number',
-        'mobile_phone_number',
-        'home_phone_number',
-        'work_email',
-        'personal_email',
-        'linkedin_link',
-        'facebook_link',
         'is_active',
-        'image'
     ];
 
     /**
@@ -72,17 +54,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    
-    /**
-     * Auto set values
-     */
-    protected static function boot() {
-        parent::boot();
-    
-        static::creating(function ($user) {
-            $user->uuid = Str::uuid();
-        });    
     }
 }

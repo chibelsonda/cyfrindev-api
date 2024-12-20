@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Trait\ValidationTrait;
+use App\Traits\ValidationResponse;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
 {
-    use ValidationTrait;
+    use ValidationResponse;
     
     /**
      * Determine if the user is authorized to make this request.
@@ -25,8 +25,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "email" => "required",
-            "password" => "required"
+            'email' => 'required',
+            'password' => 'required'
         ];
     }
 }
