@@ -52,15 +52,14 @@ class UserController extends BaseController
     /**
      * Confirm email
      * 
-     * @return JsonResponse
+     * @return UserResource
      */
-    public function confirmEmail(): JsonResponse
+    public function confirmEmail(): UserResource
     {
-        $response = $this->userService->confirmEmail(
-            request()->input('token')
-        );
+        $user = $this->userService->confirmEmail(request()->input('token'));
 
-        return $this->sendResponse($response);
+        return (new UserResource($user))
+            ->additional(['message' => 'Email confirmed']);
     }
 
     /**

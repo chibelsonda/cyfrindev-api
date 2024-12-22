@@ -11,7 +11,7 @@ Route::get('/test', function () {
 
 Route::post('/signup', [UserController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/confirm-email', [UserController::class, 'confirmEmail']);
+Route::post('/email/confirm', [UserController::class, 'confirmEmail']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 

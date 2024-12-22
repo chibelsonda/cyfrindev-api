@@ -1,5 +1,5 @@
 <?php
 
 return [
-    "hris_web_ui_url" => env('HRIS_WEB_UI_URL')
+    'ui_base_url' => env('UI_BASE_URL')
 ];

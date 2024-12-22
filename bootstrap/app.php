@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -36,6 +37,13 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        $exceptions->render(function (UnprocessableEntityHttpException $e, Request $request) use ($data) {
+            if ($request->is('api/*')) {
+                $data['message'] = $e->getMessage();
+                return response()->json($data, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        });
+
         $exceptions->render(function (\PDOException $e, Request $request) use ($data) {
             if ($request->is('api/*')) {
                 $data['message'] = config('message.server_error');
@@ -58,15 +66,5 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
     })->create();
-
-
-    //     if($e instanceof UnprocessableEntityHttpException){
-    //         $msg = json_decode($e->getMessage()) ?? $e->getMessage();
-
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $msg
-    //         ], Response::HTTP_UNPROCESSABLE_ENTITY);
-    //     }
 
 

@@ -15,7 +15,7 @@
         <p style="color: #666;">Please click the link below to confirm your email.</p>
 
         <div style="margin-top: 20px;">
-            <a href="{{ config('api.hris_web_ui_url') }}/confirm-email?token={{ $content['token'] }}" style="background-color: #3490dc; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirm</a>
+            <a href="{{ config('api.ui_base_url') }}/email/confirm?token={{ $content['token'] }}" style="background-color: #3490dc; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Confirm</a>
         </div>
 
         <p style="color: #888; margin-top: 20px;">If you have any questions or need assistance, feel free to contact us.</p>

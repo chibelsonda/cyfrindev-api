@@ -39,7 +39,7 @@ class Email extends Mailable
         return new Content(
             view: $this->email['view'],
             with: [
-                "content" => $this->email['content']
+                'content' => $this->email['content']
             ]
         );
     }
