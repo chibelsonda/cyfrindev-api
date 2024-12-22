@@ -39,3 +39,4 @@ jobs:
           cd /var/www/vhosts/cyfrindev-api
           php artisan migrate --force
           php artisan optimize
+          php artisan queue:restart
