@@ -49,7 +49,7 @@ class UserService extends BaseService
         $user['password'] = bcrypt($user['password']);
 
         $u = User::create($user);
-Log::error(Crypt::encrypt($user));
+
         $email = [
             'subject' => 'Email Confirmation',
             'to' => $user['email'],
