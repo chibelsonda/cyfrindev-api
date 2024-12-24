@@ -2,16 +2,10 @@
 
 namespace App\Traits;
 
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 
 trait ApiResponse
-{ 
-    /**
-     * @var int
-     */
-    private $httpCode = 200;
-    
+{     
     /**
      * @var string
      */
@@ -24,7 +18,7 @@ trait ApiResponse
      *
      * @return JsonResponse
      */
-    public function sendResponse($data = []): JsonResponse 
+    public function sendResponse($data = [], $httpCode = 200): JsonResponse 
     {
         $response['success'] = true;
 
@@ -36,58 +30,15 @@ trait ApiResponse
             $response['data'] = $data;
         }
 
-        return response()->json($response, $this->httpCode);
+        return response()->json($response, $httpCode);
     }
-    
-    /**
-     * Create created api response.
-     *
-     * @param string $entity
-     *
-     * @return ApiResponse
-     */
-    public function created($entity): ApiResponse
-    {
-        $this->message = "$entity created successfully.";
-        $this->httpCode = Response::HTTP_CREATED;
-
-        return $this;
-    }
-    
-    /**
-     * Create updated api response.
-     *
-     * @param string $entity
-     *
-     * @return ApiResponseTrait
-     */
-    public function updated($entity): ApiResponse
-    {
-        $this->message = "$entity updated successfully.";
-
-        return $this;
-    }
-    
-    /**
-     * Create deleted api response.
-     *
-     * @param string $entity
-     *
-     * @return ApiResponseTrait
-     */
-    public function deleted($entity): ApiResponse
-    {
-        $this->message = "$entity deleted successfully.";
-
-        return $this;
-    }
-    
+        
     /**
      * Set response message
      *
      * @param string $message
      *
-     * @return ApiResponseTrait
+     * @return ApiResponse
      */
     public function message($message): ApiResponse
     {
