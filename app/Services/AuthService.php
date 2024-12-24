@@ -8,6 +8,7 @@ use App\Services\BaseService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\AuthenticationException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class AuthService extends BaseService
 {
@@ -30,6 +31,10 @@ class AuthService extends BaseService
         }
 
         $user = Auth::user();
+        if (is_null($user->email_verified_at)) {
+            throw new UnprocessableEntityHttpException('Please confirm your email first.');
+        }
+
         $user['auth_token'] = $user->createToken('auth_token')->plainTextToken;
 
         return $user;
