@@ -63,8 +63,8 @@ class UserService extends BaseService
         dispatch(new SendEmailJob(new Email($email)));
 
         return $u;
-        } catch (\Exception $e) {
-            Log::error($e);
+        } catch (\Throwable $th) {
+            Log::error($th);
         }
     }
 
