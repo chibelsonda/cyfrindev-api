@@ -7,6 +7,7 @@ use App\Mail\Email;
 use App\Models\User;
 use App\Jobs\SendEmailJob;
 use App\Services\BaseService;
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Collection;
@@ -46,6 +47,7 @@ class UserService extends BaseService
      */
     public function signup($user): User
     {
+        try {
         $user['password'] = bcrypt($user['password']);
 
         $u = User::create($user);
@@ -61,6 +63,9 @@ class UserService extends BaseService
         dispatch(new SendEmailJob(new Email($email)));
 
         return $u;
+        } catch (\Exception $e) {
+            Log::error($e);
+        }
     }
 
      /**
