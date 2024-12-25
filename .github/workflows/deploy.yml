@@ -9,6 +9,12 @@ jobs:
    runs-on: ubuntu-latest
 
    steps:
+    - name: Setup SSH Agent
+      run: |
+        eval "$(ssh-agent -s)" 
+        echo "Add SSH key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}"
+        ssh-add -K <<< "${{ secrets.AWS_SSH_PRIVATE_KEY }}"
+
     - name: Run Remote/Artisan Commands
       uses: appleboy/ssh-action@v1.2.0
       with:
