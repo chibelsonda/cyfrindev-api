@@ -3,8 +3,11 @@ set -e
 
 echo "Deployment started ..."
 
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/chicote
+# Set SSH key
+if [ -z "$SSH_AUTH_SOCK" ] ; then
+    eval `ssh-agent -s`
+    ssh-add ~/.ssh/chicote
+fi
 
 # Enter maintenance mode or return true
 # if already is in maintenance mode
