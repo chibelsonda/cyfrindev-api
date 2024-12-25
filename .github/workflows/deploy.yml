@@ -9,26 +9,6 @@ jobs:
    runs-on: ubuntu-latest
 
    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3.6'
-
-    - name: Install dependencies
-      run: composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
-
-    - name: Synchronize Files To Server
-      uses: easingthemes/ssh-deploy@v2.1.5
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
-        SOURCE: "."
-        REMOTE_HOST: ${{ secrets.AWS_INSTANCE_IP }}
-        REMOTE_USER: ${{ secrets.AWS_USER }}
-        TARGET: "/var/www/vhosts/cyfrindev-api"
-
     - name: Run Remote/Artisan Commands
       uses: appleboy/ssh-action@v1.2.0
       with:
@@ -37,6 +17,9 @@ jobs:
         key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
         script: |
           cd /var/www/vhosts/cyfrindev-api
+          git checkout main
+          git pull 
+          composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
           php artisan migrate --force
           php artisan optimize
           php artisan queue:restart
