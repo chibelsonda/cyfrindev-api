@@ -1,25 +1,26 @@
-name: Cyfrindev Deployment
+name: Cyfrindev API Deployment
 
+# Trigger the workflow on push and 
+# pull request events on the production branch
 on:
- push:
-   branches: [main]
-
+  push:
+    branches:
+      - production
+  pull_request:
+    branches:
+      - production
+      
+# Authenticate to the the server via ssh 
+# and run our deployment script 
 jobs:
- deploy:
-   runs-on: ubuntu-latest
-
-   steps:
-    - name: Run Remote/Artisan Commands
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.AWS_INSTANCE_IP }}
-        username: ${{ secrets.AWS_USER }}
-        key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
-        script: |
-          cd /var/www/vhosts/cyfrindev-api
-          git checkout main
-          git pull 
-          composer install --optimize-autoloader --no-dev --no-progress --no-interaction --prefer-dist
-          php artisan migrate --force
-          php artisan optimize
-          php artisan queue:restart
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_INSTANCE_IP }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          script: "cd /var/www/vhosts/cyfrindev-api && ./.scripts/deploy.sh"
