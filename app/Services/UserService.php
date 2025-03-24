@@ -77,7 +77,11 @@ class UserService extends BaseService
             throw new UnprocessableEntityHttpException('Token is required.');
         }
 
-        $credential = Crypt::decrypt($token);
+        try {
+            $credential = Crypt::decrypt($token);
+        }  catch (Exception $ex) {
+            throw new UnprocessableEntityHttpException('Invalid token');
+        }
 
         if (!isset($credential['email']) || !isset($credential['password'])) {
             throw new UnprocessableEntityHttpException('Invalid token');
