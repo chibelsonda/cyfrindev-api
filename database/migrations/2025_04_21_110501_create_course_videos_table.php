@@ -18,7 +18,7 @@ return new class extends Migration
             $table->bigInteger('course_id');
             $table->string('path');
             $table->integer('order_no');
-            $table->time('length');
+            $table->time('duration');
             $table->timestamps();
         });
     }
