@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\CourseVideoController;
 use App\Http\Controllers\Api\UserController;
 
 
@@ -27,6 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::prefix('/courses')->group(function () {
         Route::get('/', [CourseController::class, 'getCourses']);
         Route::get('/{uuid}', [CourseController::class, 'getCourse']);
+        Route::get('/{uuid}/videos', [CourseVideoController::class, 'getCourseVideos']);
     });
 
 

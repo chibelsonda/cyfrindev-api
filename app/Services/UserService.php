@@ -21,10 +21,10 @@ class UserService extends BaseService
      */
     private $user;
 
-    public function __construct(private $id)
+    public function __construct(private $uuid)
     {
-        if ($id) {
-            $this->user = User::where('uuid', $id)->first();
+        if ($uuid) {
+            $this->user = User::where('uuid', $uuid)->first();
         }
     }
     

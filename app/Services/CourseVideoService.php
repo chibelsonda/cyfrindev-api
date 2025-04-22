@@ -3,9 +3,10 @@
 namespace App\Services;
 
 use App\Models\Course;
+use App\Models\CourseVideo;
 use Illuminate\Database\Eloquent\Collection;
 
-class CourseService extends BaseService
+class CourseVideoService extends BaseService
 { 
     /**
      * @var Course
@@ -22,25 +23,16 @@ class CourseService extends BaseService
     /**
      * Get courses
      *
-     * @return Collection
+     * @return Collection|array
      */
-    public function getCourses(): Collection
+    public function getCourseVideos(): Collection|array
     {
-        return Course::all();
-    }
-
-    /**
-     * Get course
-     *
-     * @return Course|array
-     */
-    public function getCourse(): Course|array
-    {
-        if (!$this->course){
+        if (!$this->course) {
             return [];
         }
 
-        return Course::find($this->course->id);
+        return CourseVideo::where('course_id', $this->course->id)
+            ->orderBy('order_no')
+            ->get();
     }
-
 }

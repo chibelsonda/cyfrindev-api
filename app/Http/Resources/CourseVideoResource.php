@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CourseResource extends JsonResource
+class CourseVideoResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,10 +14,11 @@ class CourseResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-         return [
+        return [
             'id' => $this->uuid,
-            'title' => $this->title,
-            'description' => $this->description
+            'path' => $this->path,
+            'order_no' => $this->order_no,
+            'duration' => $this->duration
         ];
     }
 }
