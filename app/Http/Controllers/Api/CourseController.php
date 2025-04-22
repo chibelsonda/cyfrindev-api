@@ -30,7 +30,8 @@ class CourseController extends BaseController
     {
         $courses = $this->courseService->getCourses();
 
-        return CourseResource::collection($courses);
+        return CourseResource::collection($courses)
+            ->additional(['success' => true]);
     }
 
     /**

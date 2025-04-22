@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Course;
 use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CourseService extends BaseService
 { 
@@ -32,12 +33,12 @@ class CourseService extends BaseService
     /**
      * Get course
      *
-     * @return Course|array
+     * @return Course
      */
-    public function getCourse(): Course|array
+    public function getCourse(): Course
     {
         if (!$this->course){
-            return [];
+            throw new NotFoundHttpException('Course not found');
         }
 
         return Course::find($this->course->id);

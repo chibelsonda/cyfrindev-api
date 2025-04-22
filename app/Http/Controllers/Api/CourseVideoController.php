@@ -29,6 +29,7 @@ class CourseVideoController extends Controller
     {
         $courses = $this->courseVideoService->getCourseVideos();
 
-        return CourseVideoResource::collection($courses);
+        return CourseVideoResource::collection($courses)
+            ->additional(['success' => true]);
     }
 }

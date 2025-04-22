@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Course;
 use App\Models\CourseVideo;
 use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CourseVideoService extends BaseService
 { 
@@ -23,12 +24,12 @@ class CourseVideoService extends BaseService
     /**
      * Get courses
      *
-     * @return Collection|array
+     * @return Collection
      */
-    public function getCourseVideos(): Collection|array
+    public function getCourseVideos(): Collection
     {
         if (!$this->course) {
-            return [];
+            throw new NotFoundHttpException('Course not found');
         }
 
         return CourseVideo::where('course_id', $this->course->id)
