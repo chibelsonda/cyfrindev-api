@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Traits\Uuid;
 use Illuminate\Database\Eloquent\Model;
 
-class Course extends Model
+class CourseModule extends Model
 {
     use Uuid;
 
@@ -16,8 +16,9 @@ class Course extends Model
      */
     protected $fillable = [
         'uuid',
+        'course_id',
         'title',
-        'description',
+        'order',
         'created_at',
         'updated_at',
     ];
@@ -31,10 +32,9 @@ class Course extends Model
         'id'
     ];
 
-    public function modules()
+    public function lessons()
     {
-        return $this->hasMany(CourseModule::class, 'course_id', 'id')
-            ->with('lessons')
-            ->orderBy('order');
+        return $this->hasMany(CourseModuleLesson::class, 'course_module_id', 'id')
+            ->orderBy('course_module_lessons.order');
     }
 }

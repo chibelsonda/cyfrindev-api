@@ -27,7 +27,7 @@ class CourseService extends BaseService
      */
     public function getCourses(): Collection
     {
-        return Course::all();
+        return Course::select('*')->with('modules')->get();
     }
 
     /**

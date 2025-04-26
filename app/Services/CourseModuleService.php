@@ -3,11 +3,12 @@
 namespace App\Services;
 
 use App\Models\Course;
+use App\Models\CourseModule;
 use App\Models\CourseVideo;
 use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class CourseVideoService extends BaseService
+class CourseModuleService extends BaseService
 { 
     /**
      * @var Course
@@ -32,8 +33,8 @@ class CourseVideoService extends BaseService
             throw new NotFoundHttpException('Course not found');
         }
 
-        return CourseVideo::where('course_id', $this->course->id)
-            ->orderBy('order_no')
+        return CourseModule::where('course_id', $this->course->id)
+            ->orderBy('order')
             ->get();
     }
 }
