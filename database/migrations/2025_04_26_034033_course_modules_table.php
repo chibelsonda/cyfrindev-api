@@ -12,22 +12,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('course_videos', function (Blueprint $table) {
+        Schema::create('course_modules', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->default(DB::raw('(gen_random_uuid())'));
-            $table->bigInteger('course_id');
-            $table->string('path');
-            $table->integer('order_no');
-            $table->time('duration');
+            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->integer('order')->default(0);
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('course_videos');
+        Schema::dropIfExists('course_modules');
     }
 };
