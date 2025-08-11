@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use Exception;
 use Carbon\Carbon;
 use App\Mail\Email;
 use App\Models\User;
 use App\Jobs\SendEmailJob;
 use App\Services\BaseService;
-use Exception;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -47,21 +47,25 @@ class UserService extends BaseService
      */
     public function signup($user): User
     {
-        $user['password'] = bcrypt($user['password']);
+        // implement transaction just in case encrypt fails, prevent from saving the user
+        return DB::transaction(function () use ($user) {
 
-        $u = User::create($user);
+            $user['password'] = bcrypt($user['password']);
 
-        $email = [
-            'subject' => 'Email Confirmation',
-            'to' => $user['email'],
-            'view' => 'emails.confirmation',
-            'content' => [
-                'token' => Crypt::encrypt($user)
-            ]
-        ];
-        dispatch(new SendEmailJob(new Email($email)));
+            $u = User::create($user);
 
-        return $u;
+            $email = [
+                'subject' => 'Email Confirmation',
+                'to' => $user['email'],
+                'view' => 'emails.confirmation',
+                'content' => [
+                    'token' => Crypt::encrypt($user)
+                ]
+            ];
+            dispatch(new SendEmailJob(new Email($email)));
+
+            return $u;
+        });
     }
 
      /**
