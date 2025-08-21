@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::prefix('/courses')->group(function () {
         Route::get('/', [CourseController::class, 'getCourses']);
         Route::get('/{uuid}', [CourseController::class, 'getCourse']);
-
+        Route::post('/', [CourseController::class, 'createCourse']);
     });
 
 

@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Services\CourseService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\BaseController;
+use App\Http\Requests\Course\CreateCourseRequest;
 use App\Http\Resources\CourseResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Response;
 
 class CourseController extends BaseController
 {
@@ -44,5 +46,21 @@ class CourseController extends BaseController
         $course = $this->courseService->getCourse();
 
         return (new CourseResource($course));
+    }
+
+    /**
+     * Create course
+     *
+     * @param CreateCourseRequest $request
+     * @return JsonResponse
+     */
+    public function createCourse(CreateCourseRequest $request): JsonResponse
+    {
+        $course = $this->courseService->createCourse($request->validated());
+
+        return (new CourseResource($course))
+            ->additional(['message' => 'Course has been created.'])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 }

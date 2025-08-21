@@ -44,4 +44,16 @@ class CourseService extends BaseService
         return Course::find($this->course->id);
     }
 
+
+    /**
+     * Create course
+     *
+     * @param array $course
+     * @return Course
+     */
+    public function createCourse(array $course): Course
+    {
+        return Course::create($course);
+    }
+
 }
