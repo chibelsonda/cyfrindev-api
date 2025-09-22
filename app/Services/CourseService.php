@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Course;
 use Illuminate\Database\Eloquent\Collection;
+use PHPUnit\Framework\Constraint\Count;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CourseService extends BaseService
@@ -54,6 +55,24 @@ class CourseService extends BaseService
     public function createCourse(array $course): Course
     {
         return Course::create($course);
+    }
+
+     /**
+     * Delete course
+     *
+     * @return Course
+     */
+    public function deleteCourse(): Course
+    {
+        if (!$this->course){
+            throw new NotFoundHttpException('Course not found');
+        }
+
+        $course = Course::find($this->course->id);
+        
+        $course->delete();
+
+        return $course;
     }
 
 }

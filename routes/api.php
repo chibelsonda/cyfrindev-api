@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('/', [CourseController::class, 'getCourses']);
         Route::get('/{uuid}', [CourseController::class, 'getCourse']);
         Route::post('/', [CourseController::class, 'createCourse']);
+        Route::delete('/{uuid}', [CourseController::class, 'deleteCourse']);
     });
 
 

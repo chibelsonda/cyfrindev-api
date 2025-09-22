@@ -37,4 +37,13 @@ class Course extends Model
             ->with('lessons')
             ->orderBy('order');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($course) {
+            $course->modules()->delete();
+        });
+    }
 }

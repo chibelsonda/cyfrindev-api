@@ -37,4 +37,13 @@ class CourseModule extends Model
         return $this->hasMany(CourseModuleLesson::class, 'course_module_id', 'id')
             ->orderBy('course_module_lessons.order');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($course) {
+            $course->lessons()->delete();
+        });
+    }
 }

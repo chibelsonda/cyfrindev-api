@@ -63,4 +63,19 @@ class CourseController extends BaseController
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
     }
+
+    /**
+     * Delete course
+     *
+     * @return JsonResponse
+     */
+    public function deleteCourse(): JsonResponse
+    {
+        $course = $this->courseService->deleteCourse();
+
+        return (new CourseResource($course))
+            ->additional(['message' => 'Course has been deleted.'])
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
+    }
 }
