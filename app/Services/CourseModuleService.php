@@ -4,37 +4,33 @@ namespace App\Services;
 
 use App\Models\Course;
 use App\Models\CourseModule;
-use App\Models\CourseVideo;
+use App\Exceptions\NotFoundException;
 use Illuminate\Database\Eloquent\Collection;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CourseModuleService extends BaseService
 { 
     /**
-     * @var Course
-     */
-    private $course;
-
-    public function __construct(private $uuid)
-    {
-        if ($uuid) {
-            $this->course = Course::where('uuid', $uuid)->first();
-        }
-    }
-
-    /**
-     * Get courses
+     * Get course modules by course UUID
      *
+     * @param string $uuid
      * @return Collection
      */
-    public function getCourseVideos(): Collection
+    public function getCourseModulesByUuid(string $uuid): Collection
     {
-        if (!$this->course) {
-            throw new NotFoundHttpException('Course not found');
+        $course = Course::where('uuid', $uuid)->first();
+
+        if (! $course) {
+            throw new NotFoundException('Course not found');
         }
 
-        return CourseModule::where('course_id', $this->course->id)
+        $modules = CourseModule::where('course_id', $course->id)
             ->orderBy('order')
             ->get();
+
+        if ($modules->isEmpty()) {
+            throw new NotFoundException('No modules found for this course');
+        }
+
+        return $modules;
     }
 }
