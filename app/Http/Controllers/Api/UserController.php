@@ -12,15 +12,10 @@ use App\Http\Requests\User\UpdateUserRequest;
 
 class UserController extends BaseController
 {
-    /**
-     * @var UserService
-     */
-    private UserService $userService; 
 
-    public function __construct()
-    {
-        $this->userService = new UserService(request()->route('user_id'));    
-    }
+    public function __construct(
+        private readonly UserService $userService
+    ) {}
 
     /**
      * Get users
@@ -63,15 +58,18 @@ class UserController extends BaseController
     }
 
     /**
-     * Update users
+     * Update user
      *
-     * @return JsonResponse
+     * @return UserResource
      */
-    public function update(UpdateUserRequest $request): JsonResponse
+    public function update(UpdateUserRequest $request): UserResource
     {
-        $response = $this->userService->update($request->validated());
+        $user = $this->userService->update(
+            auth()->user(), 
+            $request->validated()
+        );
 
-        return $this->sendResponse($response);
+        return (new UserResource($user));
     }
 
     /**
@@ -81,7 +79,7 @@ class UserController extends BaseController
      */
     public function getUser(): UserResource
     {
-        $user = $this->userService->getUser();
+        $user = $this->userService->getUser(request('uuid'));
 
         return (new UserResource($user));
     }

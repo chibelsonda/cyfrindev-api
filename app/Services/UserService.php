@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\AppRuntimeException;
 use Exception;
 use Carbon\Carbon;
 use App\Mail\Email;
@@ -16,18 +17,6 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserService extends BaseService
 {    
-    /**
-     * @var User
-     */
-    private $user;
-
-    public function __construct(private $uuid)
-    {
-        if ($uuid) {
-            $this->user = User::where('uuid', $uuid)->first();
-        }
-    }
-    
     /**
      * Get users
      *
@@ -45,7 +34,7 @@ class UserService extends BaseService
      * 
      * @return User
      */
-    public function signup($user): User
+    public function signup(array $user): User
     {
         // implement transaction just in case encrypt fails, prevent from saving the user
         return DB::transaction(function () use ($user) {
@@ -114,36 +103,54 @@ class UserService extends BaseService
     /**
      * Update a user
      *
-     * @param array $user
+     * @param User $user
+     * @param array $data
      * 
-     * @return array
+     * @return User
      */
-    public function update($user): array
+    public function update(User $user, array $data): User
     {
-        if (isset($user['image'])) {
-            $path = '/images/profile/';
-            $imageName = sha1($this->user->id). "." . $user['image']->getClientOriginalExtension();
-            $user['image']->move(public_path($path), $imageName);
+        if (isset($data['image'])) {
+            $data['image'] = $this->storeProfileImage($user, $data['image']);
+        }
 
-            $user['image'] = $path . $imageName;
-        } 
+        $user->update($data);
 
-        User::where('id', $this->user->id)->update($user);
+        return $user->refresh();
+    }
 
-        return User::find($this->user->id);
+    /**
+     * Store profile image
+     *
+     * @param User $user
+     * @param [type] $image
+     * 
+     * @return string
+     */
+    private function storeProfileImage(User $user, $image): string
+    {
+        return $image->storeAs(
+            'images/profile',
+            sha1($user->id).'.'.$image->getClientOriginalExtension(),
+            'public'
+        );
     }
 
     /**
      * Get user
      * 
+     * @param string $uuid
+     * 
      * @return User
      */
-    public function getUser(): User
+    public function getUser(string $uuid): User
     {
-        if (!$this->user) {
-            throw new NotFoundHttpException('User not found');
+        $user = User::where('uuid', $uuid)->first();
+
+        if (!$user) {
+            throw new AppRuntimeException('User not found');
         }
 
-        return $this->user;
+        return $user;
     }
 }
