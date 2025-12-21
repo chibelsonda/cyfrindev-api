@@ -11,28 +11,34 @@ Route::get('/test', function () {
     return 'Site is running...';
 });
 
-Route::post('/signup', [UserController::class, 'signup']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/email/confirm', [UserController::class, 'confirmEmail']);
+// API v1 routes
+Route::prefix('v1')->group(function () {
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+    // Public routes
+    Route::post('/signup', [UserController::class, 'signup'])->name('api.signup');
+    Route::post('/login', [AuthController::class, 'login'])->name('api.login');
+    Route::post('/email/verify', [UserController::class, 'confirmEmail'])->name('api.email.verify');
 
-    // user
-    Route::prefix('/users')->group(function () {
-        Route::post('/', [UserController::class, 'update']);
-        Route::get('/', [UserController::class, 'getUsers']);
-        Route::get('/{uuid}', [UserController::class, 'getUser']);
+    // Protected routes
+    Route::middleware('auth:sanctum')->group(function () {
+
+        // User routes
+        Route::prefix('users')->group(function () {
+            Route::get('/', [UserController::class, 'getUsers'])->name('api.users.index');
+            Route::get('/{uuid}', [UserController::class, 'getUser'])->name('api.users.show');
+            Route::put('/{uuid}', [UserController::class, 'update'])->name('api.users.update');
+        });
+
+        // Course routes
+        Route::prefix('courses')->group(function () {
+            Route::get('/', [CourseController::class, 'getCourses'])->name('api.courses.index');
+            Route::get('/{uuid}', [CourseController::class, 'getCourse'])->name('api.courses.show');
+            Route::post('/', [CourseController::class, 'createCourse'])->name('api.courses.store');
+            Route::delete('/{uuid}', [CourseController::class, 'deleteCourse'])->name('api.courses.destroy');
+        });
+
+        // Auth logout
+        Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
     });
-
-    // course
-    Route::prefix('/courses')->group(function () {
-        Route::get('/', [CourseController::class, 'getCourses']);
-        Route::get('/{uuid}', [CourseController::class, 'getCourse']);
-        Route::post('/', [CourseController::class, 'createCourse']);
-        Route::delete('/{uuid}', [CourseController::class, 'deleteCourse']);
-    });
-
-
-    Route::post('/logout', [AuthController::class, 'logout']);
 });
 
