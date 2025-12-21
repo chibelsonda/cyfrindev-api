@@ -51,7 +51,7 @@ class UserController extends BaseController
      */
     public function confirmEmail(): UserResource
     {
-        $user = $this->userService->confirmEmail(request()->input('token'));
+        $user = $this->userService->confirmEmail(request('token'));
 
         return (new UserResource($user))
             ->additional(['message' => 'Email confirmed']);

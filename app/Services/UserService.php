@@ -30,31 +30,29 @@ class UserService extends BaseService
     /**
      * Signup
      *
-     * @param array $user
+     * @param array $data
      * 
      * @return User
      */
-    public function signup(array $user): User
+    public function signup(array $data): User
     {
-        // implement transaction just in case encrypt fails, prevent from saving the user
-        return DB::transaction(function () use ($user) {
+        $data['password'] = bcrypt($data['password']);
 
-            $user['password'] = bcrypt($user['password']);
+        $user = User::create($data);
 
-            $u = User::create($user);
-
-            $email = [
+        // Dispatch AFTER commit
+        SendEmailJob::dispatch(
+            new Email([
                 'subject' => 'Email Confirmation',
-                'to' => $user['email'],
+                'to' => $user->email,
                 'view' => 'emails.confirmation',
                 'content' => [
-                    'token' => Crypt::encrypt($user)
-                ]
-            ];
-            dispatch(new SendEmailJob(new Email($email)));
+                    'token' => Crypt::encryptString($user->uuid),
+                ],
+            ])
+        )->afterCommit();
 
-            return $u;
-        });
+        return $user;
     }
 
      /**
