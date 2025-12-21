@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\AppRuntimeException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Foundation\Application;
@@ -38,6 +39,13 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (UnprocessableEntityHttpException $e, Request $request) use ($data) {
+            if ($request->is('api/*')) {
+                $data['message'] = $e->getMessage();
+                return response()->json($data, Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        });
+
+        $exceptions->render(function (AppRuntimeException $e, Request $request) use ($data) {
             if ($request->is('api/*')) {
                 $data['message'] = $e->getMessage();
                 return response()->json($data, Response::HTTP_UNPROCESSABLE_ENTITY);
