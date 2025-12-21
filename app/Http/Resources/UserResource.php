@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'email' => $this->email,
-            'auth_token' => $this->when($request->is('api/login'), $this->auth_token),
+            'auth_token' => $this->when($request->is('api/login'), $this->createToken('auth_token')->plainTextToken),
             'role' => $this->role
         ];
     }
