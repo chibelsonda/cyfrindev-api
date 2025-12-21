@@ -1,9 +1,10 @@
 <?php
 
-use App\Exceptions\AppRuntimeException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Application;
+use App\Exceptions\AppRuntimeException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -61,6 +62,8 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $exceptions->render(function (\Exception $e, Request $request) use ($data) {
             if ($request->is('api/*')) {
+                Log::error($e);
+
                 $data['message'] = config('message.unable_to_process');
                 return response()->json($data, Response::HTTP_BAD_REQUEST);
             }
@@ -68,6 +71,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (\Error $e, Request $request) use ($data) {
             if ($request->is('api/*')) {
+                Log::error($e);
+                
                 $data['message'] = config('message.unable_to_process');
                 return response()->json($data, Response::HTTP_BAD_REQUEST);
             }
