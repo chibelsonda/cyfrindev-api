@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Exceptions\AppRuntimeException;
 use App\Models\Course;
 use App\Models\CourseModule;
-use App\Exceptions\NotFoundException;
 use Illuminate\Database\Eloquent\Collection;
 
 class CourseModuleService extends BaseService
@@ -20,7 +20,7 @@ class CourseModuleService extends BaseService
         $course = Course::where('uuid', $uuid)->first();
 
         if (! $course) {
-            throw new NotFoundException('Course not found');
+            throw new AppRuntimeException('Course not found');
         }
 
         $modules = CourseModule::where('course_id', $course->id)
@@ -28,7 +28,7 @@ class CourseModuleService extends BaseService
             ->get();
 
         if ($modules->isEmpty()) {
-            throw new NotFoundException('No modules found for this course');
+            throw new AppRuntimeException('No modules found for this course');
         }
 
         return $modules;
