@@ -9,26 +9,20 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class CourseModuleController extends Controller
 {
-    /**
-     * @var CourseModuleService
-     */
-    private CourseModuleService $CourseModuleService;
-
-    public function __construct()
-    {
-        $this->CourseModuleService = new CourseModuleService(request()->route('uuid'));    
-    }
+    public function __construct(
+        private CourseModuleService $courseModuleService
+    ) {}
 
      /**
-     * Get course videos
+     * Get course modules by uuid
      *
      * @return ResourceCollection
      */
-    public function getCourseVideos(): ResourceCollection
+    public function getCourseModulesByUuid(): ResourceCollection
     {
-        $courses = $this->CourseModuleService->getCourseVideos();
+        $modules = $this->courseModuleService->getCourseModulesByUuid(request('uuid'));
 
-        return CourseModuleResource::collection($courses)
+        return CourseModuleResource::collection($modules)
             ->additional(['success' => true]);
     }
 }

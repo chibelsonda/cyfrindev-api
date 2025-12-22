@@ -9,12 +9,14 @@ use App\Http\Resources\UserResource;
 use App\Http\Requests\User\SignupRequest;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Models\User;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class UserController extends BaseController
 {
 
     public function __construct(
-        private readonly UserService $userService
+        private UserService $userService
     ) {}
 
     /**
@@ -22,11 +24,12 @@ class UserController extends BaseController
      *
      * @return JsonResponse
      */
-    public function getUsers(): JsonResponse
+    public function index(): ResourceCollection
     {
-        $response = $this->userService->getUsers();
+        $users = $this->userService->getUsers();
 
-        return $this->sendResponse($response);
+        return UserResource::collection($users)
+            ->additional(['success' => true]);
     }
 
     /**
@@ -45,13 +48,13 @@ class UserController extends BaseController
     }
 
     /**
-     * Confirm email
+     * Verify email
      * 
      * @return UserResource
      */
-    public function confirmEmail(): UserResource
+    public function verifyEmail(): UserResource
     {
-        $user = $this->userService->confirmEmail(request('token'));
+        $user = $this->userService->verifyEmail(request('token'));
 
         return (new UserResource($user))
             ->additional(['message' => 'Email confirmed']);
@@ -73,14 +76,12 @@ class UserController extends BaseController
     }
 
     /**
-     * Get a user
+     * Get user
      *
      * @return UserResource
      */
-    public function getUser(): UserResource
+    public function show(User $user): UserResource
     {
-        $user = $this->userService->getUser(request('uuid'));
-
         return (new UserResource($user));
     }
 }

@@ -3,17 +3,13 @@
 namespace App\Services;
 
 use App\Exceptions\AppRuntimeException;
-use Exception;
 use Carbon\Carbon;
 use App\Mail\Email;
 use App\Models\User;
 use App\Jobs\SendEmailJob;
 use App\Services\BaseService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Collection;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class UserService extends BaseService
 {    
@@ -40,14 +36,18 @@ class UserService extends BaseService
 
         $user = User::create($data);
 
-        // Dispatch AFTER commit
+        $token = Crypt::encryptString(json_encode([
+            'uuid' => $user->uuid,
+            'expires_at' => now()->addMinutes(30)->timestamp,
+        ]));
+
         SendEmailJob::dispatch(
             new Email([
                 'subject' => 'Email Confirmation',
                 'to' => $user->email,
                 'view' => 'emails.confirmation',
                 'content' => [
-                    'token' => Crypt::encryptString($user->uuid),
+                    'token' => $token,
                 ],
             ])
         )->afterCommit();
@@ -56,44 +56,37 @@ class UserService extends BaseService
     }
 
      /**
-     * Confirm email
+     * Verify email
      *
      * @param string $token
      * 
      * @return User
      */
-    public function confirmEmail($token): User
+    public function verifyEmail($token): User
     {
-        if (!$token) {
-            throw new UnprocessableEntityHttpException('Token is required.');
-        }
-
         try {
-            $credential = Crypt::decrypt($token);
-        }  catch (Exception $ex) {
-            throw new UnprocessableEntityHttpException('Invalid token');
+            $payload = json_decode(Crypt::decryptString($token), true);
+        } catch (\Throwable $e) {
+            throw new AppRuntimeException('', 'Invalid token');
         }
 
-        if (!isset($credential['email']) || !isset($credential['password'])) {
-            throw new UnprocessableEntityHttpException('Invalid token');
+        if (
+            empty($payload['uuid']) ||
+            empty($payload['expires_at']) ||
+            now()->timestamp > $payload['expires_at']
+        ) {
+            throw new AppRuntimeException('Token expired or invalid');
         }
 
-        $user = User::where('email', $credential['email'])
-            ->where('password', $credential['password'])
-            ->first();
+        $user = User::where('uuid', $payload['uuid'])->firstOrFail();
 
-        if (!$user) {
-            throw new UnprocessableEntityHttpException('User does not exist.');
+        if ($user->email_verified_at) {
+            throw new AppRuntimeException('Email already verified');
         }
 
-        if (!is_null($user->email_verified_at)) {
-            throw new UnprocessableEntityHttpException('Email is already confirmed.');
-        }
-
-        $user->email_verified_at = Carbon::now();
-        $user->save();
-
-        $user['auth_token'] = $user->createToken('auth_token')->plainTextToken;
+        $user->update([
+            'email_verified_at' => now(),
+        ]);
 
         return $user;
     }
@@ -132,23 +125,5 @@ class UserService extends BaseService
             sha1($user->id).'.'.$image->getClientOriginalExtension(),
             'public'
         );
-    }
-
-    /**
-     * Get user
-     * 
-     * @param string $uuid
-     * 
-     * @return User
-     */
-    public function getUser(string $uuid): User
-    {
-        $user = User::where('uuid', $uuid)->first();
-
-        if (!$user) {
-            throw new AppRuntimeException('User not found');
-        }
-
-        return $user;
     }
 }
