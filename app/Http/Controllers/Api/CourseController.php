@@ -8,27 +8,25 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\Course\CreateCourseRequest;
 use App\Http\Resources\CourseResource;
+use App\Models\Course;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 
 class CourseController extends BaseController
 {
-    /**
-     * @var CourseService
+     /**
+     * Constructor
      */
-    private CourseService $courseService;
-
-    public function __construct()
-    {
-        $this->courseService = new CourseService(request()->route('uuid'));    
-    }
+    public function __construct(
+        private CourseService $courseService
+    ) {}
 
     /**
      * Get courses
      *
      * @return ResourceCollection
      */
-    public function getCourses(): ResourceCollection
+    public function index(): ResourceCollection
     {
         $courses = $this->courseService->getCourses();
 
@@ -39,12 +37,11 @@ class CourseController extends BaseController
     /**
      * Get course
      *
+     * @param Course $course
      * @return CourseResource
      */
-    public function getCourse(): CourseResource
+    public function show(Course $course): CourseResource
     {
-        $course = $this->courseService->getCourse();
-
         return (new CourseResource($course));
     }
 
@@ -54,7 +51,7 @@ class CourseController extends BaseController
      * @param CreateCourseRequest $request
      * @return JsonResponse
      */
-    public function createCourse(CreateCourseRequest $request): JsonResponse
+    public function store(CreateCourseRequest $request): JsonResponse
     {
         $course = $this->courseService->createCourse($request->validated());
 
@@ -67,15 +64,16 @@ class CourseController extends BaseController
     /**
      * Delete course
      *
+     * @param Course $course
      * @return JsonResponse
      */
-    public function deleteCourse(): JsonResponse
+    public function destroy(Course $course): JsonResponse
     {
-        $course = $this->courseService->deleteCourse();
+        $this->courseService->deleteCourse($course);
 
-        return (new CourseResource($course))
-            ->additional(['message' => 'Course has been deleted.'])
-            ->response()
-            ->setStatusCode(Response::HTTP_OK);
+        return response()->json([
+            'message' => 'Course has been deleted.',
+            'success' => true,
+        ], Response::HTTP_OK);
     }
 }

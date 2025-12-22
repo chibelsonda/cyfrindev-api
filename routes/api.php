@@ -31,10 +31,10 @@ Route::prefix('v1')->group(function () {
 
         // Course routes
         Route::prefix('courses')->group(function () {
-            Route::get('/', [CourseController::class, 'getCourses'])->name('api.courses.index');
-            Route::get('/{uuid}', [CourseController::class, 'getCourse'])->name('api.courses.show');
-            Route::post('/', [CourseController::class, 'createCourse'])->name('api.courses.store');
-            Route::delete('/{uuid}', [CourseController::class, 'deleteCourse'])->name('api.courses.destroy');
+            Route::get('/', [CourseController::class, 'index'])->name('api.courses.index');
+            Route::get('/{course:uuid}', [CourseController::class, 'show'])->name('api.courses.show');
+            Route::post('/', [CourseController::class, 'store'])->name('api.courses.store');
+            Route::delete('/{course:uuid}', [CourseController::class, 'destroy'])->name('api.courses.destroy');
         });
 
         // Auth logout

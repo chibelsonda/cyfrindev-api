@@ -4,22 +4,9 @@ namespace App\Services;
 
 use App\Models\Course;
 use Illuminate\Database\Eloquent\Collection;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CourseService extends BaseService
 { 
-    /**
-     * @var Course
-     */
-    private $course;
-
-    public function __construct(private $uuid)
-    {
-        if ($uuid) {
-            $this->course = Course::where('uuid', $uuid)->first();
-        }
-    }
-
     /**
      * Get courses
      *
@@ -27,51 +14,31 @@ class CourseService extends BaseService
      */
     public function getCourses(): Collection
     {
-        return Course::select('*')->with('modules')->get();
+        return Course::with('modules')->get();
     }
-
-    /**
-     * Get course
-     *
-     * @return Course
-     */
-    public function getCourse(): Course
-    {
-        if (!$this->course){
-            throw new NotFoundHttpException('Course not found');
-        }
-
-        return Course::find($this->course->id);
-    }
-
 
     /**
      * Create course
      *
-     * @param array $course
+     * @param array $data
      * @return Course
      */
-    public function createCourse(array $course): Course
+    public function createCourse(array $data): Course
     {
-        return Course::create($course);
+        $course = Course::create($data);
+
+        return $course->refresh();
     }
 
      /**
      * Delete course
      *
-     * @return Course
+     * @param Course $course
+     * @return void
      */
-    public function deleteCourse(): Course
+    public function deleteCourse(Course $course): void
     {
-        if (!$this->course){
-            throw new NotFoundHttpException('Course not found');
-        }
-
-        $course = Course::find($this->course->id);
-        
         $course->delete();
-
-        return $course;
     }
 
 }

@@ -10,15 +10,9 @@ use App\Http\Resources\UserResource;
 
 class AuthController extends BaseController
 {
-    /**
-     * @var AuthService
-     */
-    private AuthService $authService;
-
-    public function __construct()
-    {
-        $this->authService = new AuthService();    
-    }
+    public function __construct(
+        private AuthService $authService
+    ) {}
 
     /**
      * Login user
